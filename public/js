@@ -1,0 +1,45 @@
+```javascript
+// public/js/main.js
+
+// Create a WebSocket connection to the server
+let socket = new WebSocket("ws://localhost:3000");
+
+// Connection opened
+socket.addEventListener('open', function (event) {
+    console.log('Connection with server established');
+});
+
+// Listen for messages from the server
+socket.addEventListener('message', function (event) {
+    console.log('Message from server: ', event.data);
+});
+
+// Connection closed
+socket.addEventListener('close', function (event) {
+    console.log('Connection with server closed');
+});
+
+// Connection error
+socket.addEventListener('error', function (event) {
+    console.log('Error: ', event);
+});
+
+// Function to start streaming
+function startStreaming(userId, neuralData) {
+    // Send a message to the server to start streaming
+    socket.send(JSON.stringify({
+        action: 'start',
+        userId: userId,
+        neuralData: neuralData
+    }));
+}
+
+// Function to stop streaming
+function stopStreaming(userId) {
+    // Send a message to the server to stop streaming
+    socket.send(JSON.stringify({
+        action: 'stop',
+        userId: userId
+    }));
+}
+```

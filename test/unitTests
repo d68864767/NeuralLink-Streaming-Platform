@@ -1,0 +1,31 @@
+```javascript
+// test/unitTests/streamController.test.js
+
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const server = require('../../src/config/server');
+const should = chai.should();
+
+chai.use(chaiHttp);
+
+describe('Stream Controller', () => {
+  describe('/POST start', () => {
+    it('it should not POST a stream without userId field', (done) => {
+      let stream = {
+        neuralData: "Sample Neural Data"
+      }
+      chai.request(server)
+        .post('/api/stream/start')
+        .send(stream)
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('userId and neuralData are required.');
+          done();
+        });
+    });
+
+    // Add more tests as needed
+  });
+});
+```

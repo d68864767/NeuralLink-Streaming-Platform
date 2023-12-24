@@ -1,0 +1,30 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuralLink Streaming Platform</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/main.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to NeuralLink Streaming Platform</h1>
+        <p>This platform integrates neural network processing with real-time data streaming.</p>
+
+        <div id="streaming-controls">
+            <h2>Streaming Controls</h2>
+            <input type="text" id="userId" placeholder="Enter User ID">
+            <button onclick="startStreaming(document.getElementById('userId').value, {});">Start Streaming</button>
+            <button onclick="stopStreaming(document.getElementById('userId').value);">Stop Streaming</button>
+        </div>
+
+        <div id="streaming-data">
+            <h2>Streaming Data</h2>
+            <p id="streaming-output">No data yet...</p>
+        </div>
+    </div>
+</body>
+</html>
+```

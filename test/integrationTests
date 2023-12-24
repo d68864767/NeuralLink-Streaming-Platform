@@ -1,0 +1,94 @@
+const request = require('supertest');
+const app = require('../../src/app');
+const userService = require('../../src/services/userService');
+const streamingService = require('../../src/services/streamingService');
+
+describe('Integration Tests', () => {
+  let testUser = null;
+  let testNeuralData = null;
+
+  beforeAll(async () => {
+    // Create a test user
+    testUser = await userService.register({
+      username: 'testUser',
+      password: 'testPassword',
+      email: 'testUser@test.com'
+    });
+
+    // Create test neural data
+    testNeuralData = {
+      brainwaveType: 'alpha',
+      data: [0.5, 0.6, 0.7, 0.8, 0.9]
+    };
+  });
+
+  afterAll(async () => {
+    // Cleanup test user
+    await userService.deleteUser(testUser._id);
+  });
+
+  describe('User API', () => {
+    it('should register a new user', async () => {
+      const res = await request(app)
+        .post('/api/user/register')
+        .send({
+          username: 'newUser',
+          password: 'newPassword',
+          email: 'newUser@test.com'
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.status).toEqual('success');
+      expect(res.body.data.username).toEqual('newUser');
+
+      // Cleanup the created user
+      await userService.deleteUser(res.body.data._id);
+    });
+
+    it('should login a user', async () => {
+      const res = await request(app)
+        .post('/api/user/login')
+        .send({
+          username: 'testUser',
+          password: 'testPassword'
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual('success');
+      expect(res.body.data.username).toEqual('testUser');
+    });
+  });
+
+  describe('Stream API', () => {
+    it('should start streaming', async () => {
+      const res = await request(app)
+        .post('/api/stream/start')
+        .send({
+          userId: testUser._id,
+          neuralData: testNeuralData
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual('success');
+      expect(res.body.data).toEqual(testNeuralData);
+
+      // Stop the started stream
+      await streamingService.stopStreaming(testUser._id);
+    });
+
+    it('should stop streaming', async () => {
+      // Start a stream first
+      await streamingService.startStreaming(testUser._id, testNeuralData);
+
+      const res = await request(app)
+        .post('/api/stream/stop')
+        .send({
+          userId: testUser._id
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual('success');
+      expect(res.body.message).toEqual('Streaming stopped successfully');
+    });
+  });
+});
